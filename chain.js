@@ -62,16 +62,16 @@ context.prototype.setRunner = function(runner){
 function step(block){
 	this.block = block;
 
-	//this.processStep = function(step){
-        //     console.log("Processing next step");
-	//	block.call(step);
-	//}
+	this.processStep = function(step){
+             console.log("Processing next step");
+		block.call(this);
+	}
 }
 
-step.prototype.processStep = function(step){
+/*step.prototype.processStep = function(step){
    console.log("Processing next step ");
    this.block.call(step);
-}
+}*/
 
 step.prototype.processNext = function(){
 	if(!this.nextStep){
@@ -108,9 +108,9 @@ step.prototype.getContextData = function(){
 }
 
 
-var test = function(step){
+var test = function(){
   console.log("this is a test.");
-   step.processNext();
+   this.processNext();
 };
 
 
