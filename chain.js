@@ -1,123 +1,124 @@
-function manager(){
-	this.context = new context();
-        this.context.setRunner(this);
-        this.firstStep = null;
-        this.lastStep = null;
-}
+module.exports =
+  (function(){
 
-manager.prototype.processChain = function(){
-	if(!this.firstStep){
-		this.context.chainComplete();
-	}else{
-            console.log("Processing the first step");
-		this.firstStep.processStep(this.firstStep);
-	}
-}
-console.log("Test [1]");
-manager.prototype.chainComplete = function(){
-}
+    function Chain(){
+      this.context = new Context();
+      this.context.setRunner(this);
+      this.firstStep = null;
+      this.lastStep = null;
+    }
 
-manager.prototype.getLastRunStepIndex = function() {
-	return this.context.getLastRunStepIndex();
-}
-	
-manager.prototype.getContextData = function(){
-	return this.context.getContextData();
-}
+    Chain.prototype.process = function(){
+      if(!this.firstStep){
+        this.context.onComplete();
+      }else{
+        console.log("Processing the first Step");
+        this.firstStep.process(this.firstStep);
+      }
+    };
 
-manager.prototype.addChainStep = function(step){
-	if(!this.firstStep){
-		this.firstStep = step;
-	}
-		
-	if(this.lastStep){
-		this.lastStep.setNextStep(step);
-	}
-		
-	this.lastStep = step;
-	this.lastStep.setContext(this.context);
-}
+    Chain.prototype.onComplete = function(){
+    };
 
-function context(){
-	this.currentStepIndex = 0;
-        this.runner = null;
-}
+    Chain.prototype.getLastRunStepIndex = function() {
+      return this.context.getLastRunStepIndex();
+    };
 
-context.prototype.chainComplete = function() {
-		this.runner.chainComplete();
-	}
+    Chain.prototype.getContextData = function(){
+      return this.context.getContextData();
+    };
 
-context.prototype.incrementStepCounter = function(){
-	this.currentStepIndex++;
-}
+    Chain.prototype.addStep = function(step){
+      if(!this.firstStep){
+        this.firstStep = step;
+      }
 
-context.prototype.setContextData = function(data){
-	this.data = data;
-}
+      if(this.lastStep){
+        this.lastStep.setNextStep(step);
+      }
 
-context.prototype.setRunner = function(runner){
-	this.runner = runner;
-}
+      this.lastStep = step;
+      this.lastStep.setContext(this.context);
+    };
 
-function step(block){
-	this.block = block;
+    function Context(){
+      this.currentStepIndex = 0;
+      this.runner = null;
+    }
 
-	this.processStep = function(step){
-             console.log("Processing next step");
-		block.call(this);
-	}
-}
+    Context.prototype.onComplete = function() {
+      this.runner.onComplete();
+    };
 
-/*step.prototype.processStep = function(step){
-   console.log("Processing next step ");
-   this.block.call(step);
-}*/
+    Context.prototype.incrementStepCounter = function(){
+      this.currentStepIndex++;
+    };
 
-step.prototype.processNext = function(){
-	if(!this.nextStep){
-		this.context.chainComplete();
-	}else{
-		this.context.incrementStepCounter();
+    Context.prototype.setContextData = function(data){
+      this.data = data;
+    };
 
-		this.nextStep.processStep(this.nextStep);
-	}
-}
+    Context.prototype.setRunner = function(runner){
+      this.runner = runner;
+    };
 
-step.prototype.interruptStep = function(message){
-	this.context.chainInterruption(message);
-}
+    function Step(block){
+      this.block = block;
 
-step.prototype.setContext = function(context){
-	this.context = context;
-}
+      this.process = function(step){
+        console.log("Processing next Step");
+        block.call(this);
+      }
+    }
 
-step.prototype.getContext = function(){
-	return this.context;
-}
+    /*Step.prototype.process = function(Step){
+     console.log("Processing next Step ");
+     this.block.call(Step);
+     }*/
 
-step.prototype.setNextStep = function(step){
-	this.nextStep = step;
-}
+    Step.prototype.processNext = function(){
+      if(!this.nextStep){
+        this.context.onComplete();
+      }else{
+        this.context.incrementStepCounter();
 
-step.prototype.getNextStep = function(){
-	return this.nextStep;
-}
+        this.nextStep.process(this.nextStep);
+      }
+    };
 
-step.prototype.getContextData = function(){
-	return context.getContextData();
-}
+    Step.prototype.interruptStep = function(message){
+      this.context.chainInterruption(message);
+    };
 
+    Step.prototype.setContext = function(context){
+      this.context = context;
+    };
 
-var test = function(){
-  console.log("this is a test.");
-   this.processNext();
-};
+    Step.prototype.getContext = function(){
+      return this.context;
+    };
 
+    Step.prototype.setNextStep = function(step){
+      this.nextStep = step;
+    };
 
-var m = new manager();
-m.addChainStep(new step(test));
-m.processChain();
+    Step.prototype.getNextStep = function(){
+      return this.nextStep;
+    };
 
+    Step.prototype.getContextData = function(){
+      return this.context.getContextData();
+    };
 
+    // the api
+    return {
+      create : function(){
+        return new Chain();
+      },
+      addStep : function(f){
+        return new Step(f);
+      }
 
+    };
 
+  })();
