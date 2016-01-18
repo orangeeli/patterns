@@ -13,3 +13,7 @@ This is a great way to hide implementation, since each action/receiver is only a
 With this clean and testable code is also ensured.
 
 ### Usage
+
+In this particular implementation, each step has a reference to the next step in the chain. There's a chain handler the knows the first step, and will start the chain with that step. When there are no more steps to handle, the chain will stop.
+
+If the chain is interrupted, no more steps will be run.
