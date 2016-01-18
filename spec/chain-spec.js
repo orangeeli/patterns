@@ -12,7 +12,7 @@ describe("Chain", function() {
 
   var m = chain.create();
 
-  m.addStep(chain.addStep(test));
+  m.addStep(chain.step.create(test));
   m.process();
 
   it("it should have run the chain", function() {

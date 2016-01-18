@@ -115,10 +115,11 @@ module.exports =
       create : function(){
         return new Chain();
       },
-      addStep : function(f){
-        return new Step(f);
+      step : {
+        create : function(f){
+          return new Step(f);
+        }
       }
-
     };
 
   })();
