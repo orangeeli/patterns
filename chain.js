@@ -58,6 +58,10 @@ module.exports =
       this.data = data;
     };
 
+    Context.prototype.getContextData = function(){
+      return this.data;
+    };
+
     Context.prototype.setRunner = function(runner){
       this.runner = runner;
     };
@@ -81,7 +85,6 @@ module.exports =
         this.context.onComplete();
       }else{
         this.context.incrementStepCounter();
-
         this.nextStep.process(this.nextStep);
       }
     };
@@ -108,6 +111,10 @@ module.exports =
 
     Step.prototype.getContextData = function(){
       return this.context.getContextData();
+    };
+
+    Step.prototype.setContextData = function(data){
+      return this.context.setContextData(data);
     };
 
     // the api
