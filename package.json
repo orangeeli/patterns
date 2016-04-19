@@ -6,8 +6,11 @@
   "dependencies": {
     "jasmine": "~2.4"
   },
-  "private":false,
+  "private": false,
   "scripts": {
-    "test": "jasmine"
+    "test": "mocha"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0"
   }
 }
