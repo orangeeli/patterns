@@ -1,29 +1,43 @@
-var assert = require('chai').assert;
-describe('Chain', function() {
+(()=>{
 
-  var chain = require("../chain");
+  "use strict";
 
-  var test = function(){
-    console.log("this is a test.");
-    var temp = 3;
-    var contextData = this.getContextData();
-    if(!contextData){
-      contextData = {};
-    }
-    contextData.temp = 3;
-    this.setContextData(contextData);
-    this.processNext();
-  };
+  // should use import
+  let assert,
+    chain;
 
-  var m = chain.create();
+ // TODO: mudar a forma como acesso ao retorno da funcao => posso ir buscar o nome da funcao com a propriedade name
+ // TODO: ver promessas, arrays, unicode em strings e acessors e imports
 
-  m.addStep(chain.step.create(test));
-  m.process();
+  assert = require('chai').assert;
+  chain = require("../chain");
 
-  describe('#indexOf()', function () {
-    it("it should have run the chain", function () {
-      console.log("The final value: "+m.getContextData().temp);
-      assert.equal(3, m.getContextData().temp);
+  describe('Chain', function() {
+
+    let test = (step)=>{
+      console.log("this is a test.");
+      return 3;
+    };
+
+    let test2 = (step)=>{
+      console.log("this is a test.");
+      return 4;
+    };
+
+    let m = chain.create();
+
+    m.addStep(chain.step.create(test));
+    m.addStep(chain.step.create(test2));
+    m.process();
+
+    describe('#process()', function () {
+      it("it should have run the chain", function () {
+        console.log("The final value: "+m.getContextData().step0);
+        console.log("The final value: "+JSON.stringify(m.getContextData()));
+        assert.equal(3, m.getContextData().step0);
+      });
     });
+
   });
-});
+
+}());

@@ -1,130 +1,164 @@
 module.exports =
-  (function(){
+  (()=>{
 
-    function Chain(){
-      this.context = new Context();
-      this.context.setRunner(this);
-      this.firstStep = null;
-      this.lastStep = null;
-    }
+    "use strict";
 
-    Chain.prototype.process = function(){
-      if(!this.firstStep){
-        this.context.onComplete();
-      }else{
-        console.log("Processing the first Step");
-        this.firstStep.process(this.firstStep);
-      }
-    };
+    let Context,
+      Chain,
+      Step;
 
-    Chain.prototype.onComplete = function(){
-    };
+    let chainFactory,
+      stepFactory;
 
-    Chain.prototype.getLastRunStepIndex = function() {
-      return this.context.getLastRunStepIndex();
-    };
+    Context = {
+      currentStepIndex : 0,
 
-    Chain.prototype.getContextData = function(){
-      return this.context.getContextData();
-    };
-
-    Chain.prototype.addStep = function(step){
-      if(!this.firstStep){
-        this.firstStep = step;
-      }
-
-      if(this.lastStep){
-        this.lastStep.setNextStep(step);
-      }
-
-      this.lastStep = step;
-      this.lastStep.setContext(this.context);
-    };
-
-    function Context(){
-      this.currentStepIndex = 0;
-      this.runner = null;
-    }
-
-    Context.prototype.onComplete = function() {
-      this.runner.onComplete();
-    };
-
-    Context.prototype.incrementStepCounter = function(){
-      this.currentStepIndex++;
-    };
-
-    Context.prototype.setContextData = function(data){
-      this.data = data;
-    };
-
-    Context.prototype.getContextData = function(){
-      return this.data;
-    };
-
-    Context.prototype.setRunner = function(runner){
-      this.runner = runner;
-    };
-
-    function Step(block){
-      this.block = block;
-
-      this.process = function(step){
-        console.log("Processing next Step");
-        block.call(this);
+      onComplete() {
+        this.runner.onComplete();
+      },
+      incrementStepCounter(){
+        console.log("The current Step Index: " + this.currentStepIndex);
+        this.currentStepIndex++;
+      },
+      getCurrentStepCounter(){
+        return this.currentStepIndex;
+      },
+      setContextData (data){
+        this.data = data;
+      },
+      getContextData (){
+        return this.data;
+      },
+      setRunner (runner){
+        this.runner = runner;
       }
     }
 
-    /*Step.prototype.process = function(Step){
-     console.log("Processing next Step ");
-     this.block.call(Step);
-     }*/
+    Chain = {
 
-    Step.prototype.processNext = function(){
-      if(!this.nextStep){
-        this.context.onComplete();
-      }else{
-        this.context.incrementStepCounter();
-        this.nextStep.process(this.nextStep);
+      //this.firstStep : {},
+      //this.lastStep : {},
+
+      process () {
+        if(!this.firstStep){
+          this.context.onComplete();
+        }else{
+          console.log("Processing the first Step");
+          this.firstStep.process(this.firstStep);
+        }
+      },
+      onComplete (){
+      },
+      getLastRunStepIndex (){
+        return this.context.getLastRunStepIndex();
+      },
+      getContextData (){
+        return this.context.getContextData();
+      },
+      addStep (step){
+        if(!this.firstStep){
+          this.firstStep = step;
+        }
+
+        if(this.lastStep){
+          this.lastStep.setNextStep(step);
+        }
+
+        this.lastStep = step;
+        this.lastStep.setContext(this.context);
       }
-    };
+    }
 
-    Step.prototype.interruptStep = function(message){
-      this.context.chainInterruption(message);
-    };
+    chainFactory = {
+      create () {
 
-    Step.prototype.setContext = function(context){
-      this.context = context;
-    };
+       let context,
+         chain;
 
-    Step.prototype.getContext = function(){
-      return this.context;
-    };
+       context = Object.assign(Object.create(Context));
+       chain = Object.assign(Object.create(Chain), {
+         context : context
+       });
 
-    Step.prototype.setNextStep = function(step){
-      this.nextStep = step;
-    };
+       context.setRunner(chain);
 
-    Step.prototype.getNextStep = function(){
-      return this.nextStep;
-    };
+       return chain;
+     }
+    }
 
-    Step.prototype.getContextData = function(){
-      return this.context.getContextData();
-    };
+    stepFactory = {
+      create (block) {
 
-    Step.prototype.setContextData = function(data){
-      return this.context.setContextData(data);
-    };
+        let step;
+
+        step = Object.assign(Object.create(Step), {
+          block : block,
+          process (){
+            console.log("Processing next Step");
+            let rValue,
+              contextData,
+              context;
+
+            rValue = block.call(step);
+
+            console.log(`The function name: ${block.name}`);
+
+            contextData = this.getContextData();
+            context = this.getContext();
+            if(!contextData){
+              contextData = {};
+            }
+            contextData["step"+context.getCurrentStepCounter()] = rValue;
+            this.setContextData(contextData);
+            this.processNext();
+          }
+        });
+
+        return step;
+      }
+    }
+
+    Step = {
+      processNext (){
+        if(!this.nextStep){
+          this.context.onComplete();
+        }else{
+          console.log("Process next was called!");
+          this.context.incrementStepCounter();
+          this.nextStep.process();
+        }
+      },
+      interruptStep (message){
+        this.context.chainInterruption(message);
+      },
+      setContext (context){
+        this.context = context;
+      },
+      getContext (){
+        return this.context;
+      },
+      setNextStep (step){
+        this.nextStep = step;
+      },
+      getNextStep (){
+        return this.nextStep;
+      },
+      getContextData (){
+        return this.context.getContextData();
+      },
+      setContextData (data){
+        return this.context.setContextData(data);
+      }
+    }
 
     // the api
     return {
-      create : function(){
-        return new Chain();
+      create (){
+        return chainFactory.create();
       },
       step : {
-        create : function(f){
-          return new Step(f);
+        create (f){
+          return stepFactory.create(f);;
         }
       }
     };
