@@ -6,38 +6,42 @@
   let assert,
     chain;
 
- // TODO: mudar a forma como acesso ao retorno da funcao => posso ir buscar o nome da funcao com a propriedade name
- // TODO: ver promessas, arrays, unicode em strings e acessors e imports
-
   assert = require('chai').assert;
   chain = require("../chain");
 
-  describe('Chain', function() {
+  describe('Chain with two steps', function() {
 
-    let test = (step)=>{
+    let firstStep = (step)=>{
       console.log("this is a test.");
       return 3;
     };
 
-    let test2 = (step)=>{
+    let secondStep = (step)=>{
       console.log("this is a test.");
       return 4;
     };
 
     let m = chain.create();
 
-    m.addStep(chain.step.create(test));
-    m.addStep(chain.step.create(test2));
-    m.process();
+    m.addStep(chain.step.create(firstStep)).
+    addStep(chain.step.create(secondStep)).
+    process();
 
-    describe('#process()', function () {
-      it("it should have run the chain", function () {
-        console.log("The final value: "+m.getContextData().step0);
-        console.log("The final value: "+JSON.stringify(m.getContextData()));
-        assert.equal(3, m.getContextData().step0);
+    describe('When #process()', function () {
+      it("it should get the return value of the first step", function () {
+        assert.equal(3, m.getStepReturnValue(0));
       });
+
+      it("it should get the return value of the second step", function () {
+        assert.equal(4, m.getStepReturnValue(1));
+      });
+
+      it("it should have a step counter at 2", function () {
+        assert.equal(2, m.getNumberOfStepsRun());
+      });
+
     });
 
   });
 
-}());
+})();
