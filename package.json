@@ -3,9 +3,6 @@
   "version": "0.0.1",
   "description": "Chain of responsibility JS implementation",
   "main": "chain.js",
-  "dependencies": {
-    "jasmine": "~2.4"
-  },
   "private": false,
   "scripts": {
     "test": "mocha"
