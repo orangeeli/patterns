@@ -5,9 +5,12 @@
   "main": "chain.js",
   "private": false,
   "scripts": {
-    "test": "mocha"
+    "test": "gulp test:mocha"
   },
   "devDependencies": {
-    "chai": "^3.5.0"
+    "chai": "^3.5.0",
+    "gulp": "^3.9.1",
+    "gulp-mocha": "^2.2.0",
+    "mocha": "^2.4.5"
   }
 }
