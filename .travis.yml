@@ -3,3 +3,4 @@ node_js:
   - "6"
 before_script:
     - "npm install -g mocha"
+    - "npm install --global gulp-cli"
