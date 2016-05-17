@@ -1,4 +1,6 @@
-# Patterns 
+[![Build Status](https://travis-ci.org/orangeeli/patterns.svg?branch=master)](https://travis-ci.org/orangeeli/patterns) [![Code Climate](https://codeclimate.com/github/orangeeli/patterns/badges/gpa.svg)](https://codeclimate.com/github/orangeeli/patterns)
+
+# Patterns
 This is a small project to practice implementation of software design patterns on javascript. 
 
 ## Chain
@@ -16,11 +18,6 @@ With this clean and testable code is also ensured.
 In this particular implementation, each step has a reference to the next step in the chain. There's a chain handler the knows the first step, and will start the chain with that step. When there are no more steps to handle, the chain will stop.
 
 If the chain is interrupted, no more steps will be run.
-
-### Status
-[![Build Status](https://travis-ci.org/orangeeli/patterns.svg?branch=master)](https://travis-ci.org/orangeeli/patterns)
-
-[![Code Climate](https://codeclimate.com/github/orangeeli/patterns/badges/gpa.svg)](https://codeclimate.com/github/orangeeli/patterns)
 
 ## License
 [MIT License](http://www.opensource.org/licenses/mit-license.php)
