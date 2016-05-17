@@ -20,6 +20,8 @@ If the chain is interrupted, no more steps will be run.
 ### Status
 [![Build Status](https://travis-ci.org/orangeeli/patterns.svg?branch=master)](https://travis-ci.org/orangeeli/patterns)
 
+[![Code Climate](https://codeclimate.com/github/orangeeli/patterns/badges/gpa.svg)](https://codeclimate.com/github/orangeeli/patterns)
+
 ## License
 [MIT License](http://www.opensource.org/licenses/mit-license.php)
 
